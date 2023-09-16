@@ -656,6 +656,11 @@ def MatrixInverse(*, input, adjoint=False, name="MatrixInverse"):
 
 
 @to_ivy_arrays_and_back
+def MaxPoolV2(*, input, ksize, strides, padding, data_format="NHWC", name=None):
+    return ivy.max_pool2d(input, ksize, strides, padding, data_format=data_format)
+
+
+@to_ivy_arrays_and_back
 def Minimum(*, x, y, name="Minimum"):
     return ivy.minimum(x, y)
 

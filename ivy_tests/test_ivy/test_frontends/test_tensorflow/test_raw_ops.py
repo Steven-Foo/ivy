@@ -90,6 +90,13 @@ def _arrays_idx_n_dtypes(draw):
     return xs, input_dtypes, unique_idx
 
 
+# Data format
+@st.composite
+def _data_format_helper(draw, data_format):
+    data_format = draw(data_format)
+    return data_format
+
+
 @st.composite
 def _dtypes(draw):
     return draw(
@@ -2766,6 +2773,39 @@ def test_tensorflow_Max(  # NOQA
         input=x[0],
         axis=axis,
         keep_dims=keep_dims,
+    )
+
+
+@handle_frontend_test(
+    fn_tree="tensorflow.raw_ops.MaxPoolV2",
+    data_format=_data_format_helper(data_format=st.sampled_from(["NHWC"])),
+    x_k_s_p=helpers.arrays_for_pooling(min_dims=4, max_dims=4, min_side=1, max_side=4),
+    test_with_out=st.just(False),
+)
+def test_tensorflow_MaxPoolV2(  # NOQA
+    *,
+    x_k_s_p,
+    frontend,
+    data_format,
+    test_flags,
+    fn_tree,
+    backend_fw,
+    on_device,
+):
+    input_dtype, x, ksize, strides, padding = x_k_s_p
+    data_format = data_format
+    helpers.test_frontend_function(
+        input_dtypes=input_dtype,
+        backend_to_test=backend_fw,
+        frontend=frontend,
+        test_flags=test_flags,
+        fn_tree=fn_tree,
+        on_device=on_device,
+        input=x[0],
+        ksize=ksize,
+        strides=strides,
+        padding=padding,
+        data_format=data_format,
     )
 
 
